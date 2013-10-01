@@ -160,7 +160,6 @@ GLuint Sphere::sphereIndexBufferObject = indexBufferObject;
 
 // two variables you may need for retracing the path
 float lastTimeP = 0.0f;
-bool retrace = false;
 bool chg = false;
 
 // this function returns a transform matrix that is applied to an object to be moved.  The input is a time
@@ -169,13 +168,20 @@ glm::mat4 moveObj(float timeP) {
 
    // create an identity matrix
    glm::mat4 moveMatrix;
+   if (timeP < lastTimeP) {
+      if (chg == false ) {
+         chg = true;
+         printf("change is true\n");
+      }
+      else
+      {
+         printf("change is false\n");
+         chg = false;
+      }
+   }
+
    if (timeP < 0.0f) {
       // don't move anything
-      if (timeP != -1.0f && chg == false)
-         chg = true;
-      else
-         chg = false;
-
       return moveMatrix;
    }
 
@@ -184,14 +190,16 @@ glm::mat4 moveObj(float timeP) {
 
    // this step multiplies the matrix by a translation vector
    else {
-      printf("time is %f\n", timeP);
+         moveMatrix = glm::rotate(moveMatrix, 1080.0f * timeP, glm::vec3(0.0f, 10.0f * timeP , 0.0f));
       if (chg == false) {
-         moveMatrix = glm::translate(moveMatrix, glm::vec3(20.0f * timeP, 0.0f, 0.0f));
+         moveMatrix = glm::translate(moveMatrix, glm::vec3(10.0f * timeP, 5.0f * timeP, 0.0f));
+         lastTimeP = timeP;
       }
       else {
-         moveMatrix = glm::translate(moveMatrix, glm::vec3(20.0f + (-20.0f * timeP), 0.0f, 0.0f));
+         moveMatrix = glm::translate(moveMatrix, glm::vec3(10.0f + (-10.0f * timeP), 5.0f - (5.0f * timeP), 0.0f ));
+         lastTimeP = timeP;
       }
-    }
+   }
    return moveMatrix;
 }
 
